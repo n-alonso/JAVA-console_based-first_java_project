@@ -1,22 +1,21 @@
-package budget;
+package budget.actions.strategies;
 
-import java.util.ArrayList;
-import java.util.List;
+import budget.actions.ConsoleInterface;
+import budget.model.Account;
+import budget.model.AccountContext;
+import budget.model.Expense;
+
 import java.util.Scanner;
 
-class ProcessInput {
-    static List<Expense> expenses = new ArrayList<>();
+public class ConsoleAccountStrategy implements AccountStrategy {
 
-    static List<String> incomes = new ArrayList<>();
-
-    static double balance;
-
-    public static void addExpense() {
-        Scanner scanner = new Scanner(System.in);
+    public void addExpense(AccountContext context) {
+        Scanner scanner = context.getScanner();
+        Account account = context.getAccount();
 
         boolean keepAdding = true;
         while (keepAdding) {
-            PrintData.printAddExpensesMenu();
+            ConsoleInterface.printAddExpensesMenu();
             int action = Integer.parseInt(scanner.nextLine());
             String category = switch (action) {
                 case 1 -> "Food";
@@ -33,33 +32,21 @@ class ProcessInput {
                 double price = Double.parseDouble(scanner.nextLine());
 
                 Expense expense = new Expense(name, category, price);
-                expenses.add(expense);
+                context.getAccount().expenses.add(expense);
 
-                balance -= price;
-                if (balance < 0) balance = 0;
+                account.balance -= price;
+                if (account.balance < 0) account.balance = 0;
 
                 System.out.println("Purchase was added!");
             }
         }
-
-        scanner.close();
     }
 
-    public static void addExpense(Expense expense) {
-        expenses.add(expense);
-    }
-
-    public static void addIncome() {
-        Scanner scanner = new Scanner(System.in);
-
+    public void addIncome(AccountContext context) {
         System.out.println("\nEnter income:");
-        String amount = scanner.nextLine();
-        incomes.add(amount);
-        balance += Double.parseDouble(amount);
+        String amount = context.getScanner().nextLine();
+        context.getAccount().incomes.add(amount);
+        context.getAccount().balance += Double.parseDouble(amount);
         System.out.println("Income was added!");
-    }
-
-    public static void addIncome(String income) {
-        incomes.add(income);
     }
 }
